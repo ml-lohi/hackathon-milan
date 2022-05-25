@@ -16,7 +16,7 @@ class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
         self.root = root
         self.model = keras.models.load_model(
-            "hackathon-milan\submission\code\models\CNN"
+            "hackathon-milan\submission\code\models_kosta\CNN"
         )
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -37,7 +37,7 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(3, 5, figsize=(10, 5), sharex=True, sharey=True)
+        fig, axs = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -89,21 +89,22 @@ class MatplotlibApp(AppInterface):
                     sample = to_real(
                         np.sum(np.expand_dims(range_doppler_map, axis=0), axis=1)
                     )
+                    sample[:, :, 32, :] = 0
                     print(i_frame)
                     sample = np.moveaxis(sample, 1, 3)
                     prediction_array = self.model.predict(sample, verbose=0)
+                    self._plot(canvas, axs, sample)
                     label = np.argmax(prediction_array)
                     self.br = label
                     self._reset_hr_br()
                     # self._plot(canvas, axs, data)
                     self.raw_data = []
 
-    def _plot(self, canvas, axs, raw_data):
+    def _plot(self, canvas, axs, sample):
 
-        for i in range(3):
-            for j in range(5):
-                axs[i, j].imshow(np.abs(raw_data)[j, i, :, :])
-                axs[i, j].set_aspect("equal")
+        for i, ax in enumerate(axs):
+            to_plot = sample[0, :, :, i]
+            ax.imshow(to_plot)
 
         canvas.draw()
         print(f"Plotted")
