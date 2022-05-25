@@ -21,3 +21,5 @@ docs/doxyoutput
 .ipynb_checkpoints/
 __pycache__/
 *.csv
+submission/code/data/
+submission/code/data_old/
