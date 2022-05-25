@@ -20,8 +20,10 @@ docs/doxyoutput
 /docs/.doctrees/
 .ipynb_checkpoints/
 __pycache__/
+*.csv
 venv_milan/
 submission/code/data/
 submission/code/data_old/
-submission/models/CNN/variables/
-
+submission/code/history/
+CNN/
+submission/code/models/
