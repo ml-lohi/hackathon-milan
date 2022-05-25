@@ -23,3 +23,4 @@ __pycache__/
 *.csv
 submission/code/data/
 submission/code/data_old/
+models/
