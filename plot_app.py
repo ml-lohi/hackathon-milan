@@ -5,18 +5,21 @@ import tkinter as tk
 import numpy as np
 import time
 from utils.app_interface import AppInterface
-from utils.helper import fft
-
+from utils.helper import fft, read_data
+from utils import processing
+FOLDER = "data/"
 
 class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
+        data = read_data(FOLDER + "data_static_30_s_1.csv")
+        ph, _, _, _ = processing.do_processing(data) 
+        self.phases = np.mean(ph, axis=0)
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
         self.buttonFrame = tk.Frame(self.root, bg="black")
-        self.buttonFrame.pack(side="bottom", fill="x", expand=True)
+        self.buttonFrame.pack(side="bottom", fill="both", expand=True)
         self.plot_active = True
-        self.xdata = []
         self.ydata = []
         self.br = 0
         self.strVarBr = tk.StringVar()
@@ -27,7 +30,7 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(2, 1, figsize=(5, 5))
+        fig, axs = plt.subplots(2, 1, figsize=(3, 3))
         fig.patch.set_facecolor("xkcd:black")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -57,8 +60,6 @@ class MatplotlibApp(AppInterface):
         self.plot_active = True
 
     def restart(self):
-        self.x = 0
-        self.xdata = []
         self.ydata = []
         self.br = 0
 
@@ -70,17 +71,16 @@ class MatplotlibApp(AppInterface):
             ax.yaxis.label.set_color(color)
             ax.tick_params(axis="x", colors=color)
             ax.tick_params(axis="y", colors=color)
-        self.x = 0
+        counter = 0
         while True:
             if self.plot_active:
-                self.xdata.append(self.x)
-                self.ydata.append(np.sin(self.x * np.pi))
+                self.ydata.extend(self.phases[counter:(counter+1)*1000])
                 fftx, ffty = fft(np.array(self.ydata))
                 self._plot(canvas, axs, fftx, ffty)
-                time.sleep(0.1)
+                time.sleep(1)
                 self.br = self.br + 1
                 self._reset_hr_br()
-                self.x = self.x + 0.1
+                counter = counter + 1
 
     def _plot(self, canvas, axs, fftx, ffty):
         for i, ax in enumerate(axs):
@@ -88,7 +88,7 @@ class MatplotlibApp(AppInterface):
             if i == 1:
                 ax.plot(fftx, ffty, color="green")
             else:
-                ax.plot(self.xdata, self.ydata, color="green")
+                ax.plot(self.ydata, color="green")
 
         canvas.draw()
 
@@ -96,7 +96,7 @@ class MatplotlibApp(AppInterface):
 if "__main__" == __name__:
     root = tk.Tk()
     root.title("Main app")
-    root.geometry("1200x700")
+    root.geometry("900x800")
     root.configure(bg="black")
     app = MatplotlibApp(root=root)
     app.run()
