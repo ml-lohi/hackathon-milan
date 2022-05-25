@@ -23,3 +23,5 @@ __pycache__/
 venv_milan/
 submission/code/data/
 submission/code/data_old/
+submission/models/CNN/variables/
+
