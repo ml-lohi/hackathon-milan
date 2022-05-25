@@ -4,16 +4,9 @@ from scipy import ndimage
 from scipy.fftpack import fft
 
 
-def read_data(file_name):
-    """
-    Reads the data from the file csv and returns the data as a numpy array
-    """
-    loaded_data = np.loadtxt(file_name, delimiter=",")
-    data_original = loaded_data.reshape(
-        loaded_data.shape[0], loaded_data.shape[1] // 64, 64
-    )
-
-    return data_original
+def read_data(file):
+    data = np.loadtxt(file, dtype=np.complex128)
+    return data.reshape().reshape(data.shape[0], 5, 3, 64, 64)
 
 
 def calculate_phases(data, N, sample_size):
