@@ -6,7 +6,7 @@ from scipy.fftpack import fft
 
 def read_data(file):
     data = np.loadtxt(file, dtype=np.complex128)
-    return data.reshape().reshape(data.shape[0], 5, 3, 64, 64)
+    return data.reshape(data.shape[0], 5, 3, 64, 64)
 
 
 def calculate_phases(data, N, sample_size):

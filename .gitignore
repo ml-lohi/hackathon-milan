@@ -20,3 +20,4 @@ docs/doxyoutput
 /docs/.doctrees/
 .ipynb_checkpoints/
 __pycache__/
+venv_milan/
