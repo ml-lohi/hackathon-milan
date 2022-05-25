@@ -5,15 +5,15 @@ import tkinter as tk
 import numpy as np
 import time
 from utils.app_interface import AppInterface
-from utils.helper import fft, read_data
+from utils.helper import read_data
 from utils import processing
-FOLDER = "data/"
+
+FOLDER = "hackathon-milan\\submission\\code\\data\\"
+
 
 class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
-        data = read_data(FOLDER + "data_static_30_s_1.csv")
-        ph, _, _, _ = processing.do_processing(data) 
-        self.phases = np.mean(ph, axis=0)
+        self.data = read_data(FOLDER + "3p.csv")
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -30,8 +30,8 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(2, 1, figsize=(3, 3))
-        fig.patch.set_facecolor("xkcd:black")
+        fig, axs = plt.subplots(3, 5, figsize=(10, 5), sharex=True, sharey=True)
+        fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
         canvas.get_tk_widget().pack()
@@ -64,31 +64,25 @@ class MatplotlibApp(AppInterface):
         self.br = 0
 
     def _process(self, canvas, axs):
-        for ax in axs:
-            ax.set_facecolor("xkcd:black")
-            color = "white"
-            ax.xaxis.label.set_color(color)
-            ax.yaxis.label.set_color(color)
-            ax.tick_params(axis="x", colors=color)
-            ax.tick_params(axis="y", colors=color)
-        counter = 0
-        while True:
-            if self.plot_active:
-                self.ydata.extend(self.phases[counter:(counter+1)*1000])
-                fftx, ffty = fft(np.array(self.ydata))
-                self._plot(canvas, axs, fftx, ffty)
-                time.sleep(1)
-                self.br = self.br + 1
-                self._reset_hr_br()
-                counter = counter + 1
+        # for ax in axs:
+        #     ax.set_facecolor("xkcd:black")
+        #     color = "white"
+        #     ax.xaxis.label.set_color(color)
+        #     ax.yaxis.label.set_color(color)
+        #     ax.tick_params(axis="x", colors=color)
+        #     ax.tick_params(axis="y", colors=color)
 
-    def _plot(self, canvas, axs, fftx, ffty):
-        for i, ax in enumerate(axs):
-            ax.clear()  # clear axes from previous plot
-            if i == 1:
-                ax.plot(fftx, ffty, color="green")
-            else:
-                ax.plot(self.ydata, color="green")
+        for sample in self.data:
+            sample = np.squeeze(sample)
+            self._plot(canvas, axs, sample)
+            self.br = self.br + 1
+            time.sleep(0.25)
+
+    def _plot(self, canvas, axs, range_doppler_map):
+        for i in range(3):
+            for j in range(5):
+                axs[i, j].imshow(np.abs(range_doppler_map)[j, i, :, :])
+                axs[i, j].set_aspect("equal")
 
         canvas.draw()
 
