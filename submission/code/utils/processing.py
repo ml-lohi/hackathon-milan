@@ -1,4 +1,4 @@
-from fft import range_fft, range_doppler_fft
+from utils.fft import range_fft, range_doppler_fft
 
 
 def processing_rangeDopplerData(st_data, compensateMotion=False):

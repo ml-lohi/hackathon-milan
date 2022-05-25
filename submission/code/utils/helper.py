@@ -39,7 +39,7 @@ def filter_gauss(image, kernel_factor, sigma):
     return data_smoothed
 
 
-def fft(data, samples_per_second=1000):
+def fft_our(data, samples_per_second=1000):
     """
     Args:
         data: numpy array with the data
@@ -52,8 +52,9 @@ def fft(data, samples_per_second=1000):
     indices = freqs > 0
     return freqs[indices], np.abs(fft_wave.real[indices])
 
-def avarage_phases(phases, n = 20):
+
+def avarage_phases(phases, n=20):
     phases_averaged = np.array([])
-    for p in phases: 
-        phases_averaged = np.append(phases_averaged, np.mean(p.reshape(-1, n), axis=1)) 
-    return phases_averaged.reshape(phases.shape[0], int(phases.shape[1]/n))
+    for p in phases:
+        phases_averaged = np.append(phases_averaged, np.mean(p.reshape(-1, n), axis=1))
+    return phases_averaged.reshape(phases.shape[0], int(phases.shape[1] / n))
