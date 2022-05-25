@@ -11,7 +11,8 @@ import cv2
 from tensorflow import keras
 
 FOLDER = "hackathon-milan\\submission\\code\\data\\"
-
+PATH_MAC_MODEL = "submission/code/models/CNN"
+PATH_MAC_DATA = "submission/code/data/"
 
 def normalize_data(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
@@ -41,9 +42,9 @@ def calculate_saliency_map(frames):
 class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
         self.model = keras.models.load_model(
-            "hackathon-milan\submission\code\models\CNN"
+            PATH_MAC_MODEL
         )
-        self.data = read_data(FOLDER + "empty.csv")
+        self.data = read_data(PATH_MAC_DATA + "3p.csv")
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -51,16 +52,16 @@ class MatplotlibApp(AppInterface):
         self.buttonFrame.pack(side="bottom", fill="both", expand=True)
         self.plot_active = True
         self.ydata = []
-        self.br = 0
-        self.strVarBr = tk.StringVar()
-        self._reset_hr_br()
+        self.people_count = 0
+        self.strVarPeopleCount = tk.StringVar()
+        self._reset_var()
 
-    def _reset_hr_br(self):
-        self.strVarBr.set(f"Number of people: {self.br}")
+    def _reset_var(self):
+        self.strVarPeopleCount.set(f"Number of people: {self.people_count}")
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5), sharex=True, sharey=True)
+        fig, axs = plt.subplots(1, 3, figsize=(3, 3), sharex=True, sharey=True)
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -80,7 +81,7 @@ class MatplotlibApp(AppInterface):
         self.button_start.bind("<Button-1>", lambda event: self.restart())
         self.button_start.pack()
 
-        lbl = self.create_label_var(self.buttonFrame, textvariable=self.strVarBr)
+        lbl = self.create_label_var(self.buttonFrame, textvariable=self.strVarPeopleCount)
         lbl.pack()
 
     def stop_plotting(self):
@@ -91,23 +92,23 @@ class MatplotlibApp(AppInterface):
 
     def restart(self):
         self.ydata = []
-        self.br = 0
+        self.people_count = 0
 
     def _process(self, canvas, axs):
         for sample in self.data:
-            # print(sample.shape)
             sample = to_real(np.sum(np.expand_dims(sample, axis=0), axis=1))
-            # print(sample.shape)
+            sample[:,:,32,:] = 0
             sample = np.moveaxis(sample, 1, 3)
             prediction_array = self.model.predict(sample)
-            label = np.argmax(prediction_array)
-            self.br = label
-            self._reset_hr_br()
+            self._plot(canvas, axs, sample)
+            self.people_count = np.argmax(prediction_array)
+            self._reset_var()
             time.sleep(0.25)
 
-    def _plot(self, canvas, axs, saliency_map):
-        to_plot = saliency_map[0, :, :]
-        axs.imshow(to_plot)
+    def _plot(self, canvas, axs, sample):
+        for i, ax in enumerate(axs):
+            to_plot = sample[0,:,:,i]
+            ax.imshow(to_plot)
         canvas.draw()
 
 
