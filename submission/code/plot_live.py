@@ -32,7 +32,7 @@ class MatplotlibApp(AppInterface):
 
     def run(self):
         fig, axs = plt.subplots(
-            3, self.number_of_frames, figsize=(15, 10), sharex=True, sharey=True
+            1, self.number_of_frames, figsize=(15, 10), sharex=True, sharey=True
         )
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
@@ -90,16 +90,16 @@ class MatplotlibApp(AppInterface):
                 if i_frame % (self.number_of_frames) == 0 and i_frame != 0:
                     data = np.asarray(self.raw_data)
                     range_doppler_map = processing.processing_rangeDopplerData(data)
-                    print(range_doppler_map.shape)
-                    self._plot(canvas, axs, range_doppler_map)
+                    # print(range_doppler_map.shape)
+                    self._plot(canvas, axs, np.sum(range_doppler_map, axis=1).squeeze())
                     self.raw_data = []
 
     def _plot(self, canvas, axs, range_doppler_map):
 
-        for i in range(3):
+        for i in range(1):
             for j in range(5):
-                axs[i, j].imshow(np.abs(range_doppler_map)[j, i, :, :])
-                axs[i, j].set_aspect("equal")
+                axs[j].imshow(np.abs(range_doppler_map)[j, :, :])
+                axs[j].set_aspect("equal")
 
         canvas.draw()
         print(f"Plotted")
