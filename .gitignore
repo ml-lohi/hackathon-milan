@@ -20,3 +20,5 @@ docs/doxyoutput
 /docs/.doctrees/
 .ipynb_checkpoints/
 __pycache__/
+submission/code/data/
+submission/code/data_old/
