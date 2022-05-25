@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import threading
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -7,11 +8,16 @@ import time
 from utils.app_interface import AppInterface
 from ifxdaq.sensor.radar_ifx import RadarIfxAvian
 from utils import processing
+from utils.helper import read_data, to_real
+from tensorflow import keras
 
 
 class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
         self.root = root
+        self.model = keras.models.load_model(
+            "hackathon-milan\submission\code\models\CNN"
+        )
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
         self.buttonFrame = tk.Frame(self.root, bg="black")
@@ -31,9 +37,7 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(
-            1, self.number_of_frames, figsize=(15, 10), sharex=True, sharey=True
-        )
+        fig, axs = plt.subplots(3, 5, figsize=(10, 5), sharex=True, sharey=True)
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -67,14 +71,6 @@ class MatplotlibApp(AppInterface):
         self.br = 0
 
     def _process(self, canvas, axs):
-        # for ax in axs:
-        #     ax.set_facecolor("xkcd:black")
-        #     color = "white"
-        #     ax.xaxis.label.set_color(color)
-        #     ax.yaxis.label.set_color(color)
-        #     ax.tick_params(axis="x", colors=color)
-        #     ax.tick_params(axis="y", colors=color)
-        counter = 0
 
         with RadarIfxAvian(
             self.config_file
@@ -83,23 +79,31 @@ class MatplotlibApp(AppInterface):
             for i_frame, frame in enumerate(
                 device
             ):  # Loop through the frames coming from the radar
-
-                self.raw_data.append(
-                    np.squeeze(frame["radar"].data / (4095.0))
-                )  # Dividing by 4095.0 to scale the data
+                if i_frame != 0:
+                    self.raw_data.append(
+                        np.squeeze(frame["radar"].data / (4095.0))
+                    )  # Dividing by 4095.0 to scale the data
                 if i_frame % (self.number_of_frames) == 0 and i_frame != 0:
                     data = np.asarray(self.raw_data)
                     range_doppler_map = processing.processing_rangeDopplerData(data)
-                    # print(range_doppler_map.shape)
-                    self._plot(canvas, axs, np.sum(range_doppler_map, axis=1).squeeze())
+                    sample = to_real(
+                        np.sum(np.expand_dims(range_doppler_map, axis=0), axis=1)
+                    )
+                    print(i_frame)
+                    sample = np.moveaxis(sample, 1, 3)
+                    prediction_array = self.model.predict(sample, verbose=0)
+                    label = np.argmax(prediction_array)
+                    self.br = label
+                    self._reset_hr_br()
+                    # self._plot(canvas, axs, data)
                     self.raw_data = []
 
-    def _plot(self, canvas, axs, range_doppler_map):
+    def _plot(self, canvas, axs, raw_data):
 
-        for i in range(1):
+        for i in range(3):
             for j in range(5):
-                axs[j].imshow(np.abs(range_doppler_map)[j, :, :])
-                axs[j].set_aspect("equal")
+                axs[i, j].imshow(np.abs(raw_data)[j, i, :, :])
+                axs[i, j].set_aspect("equal")
 
         canvas.draw()
         print(f"Plotted")
