@@ -22,3 +22,4 @@ docs/doxyoutput
 __pycache__/
 submission/code/data/
 submission/code/data_old/
+models/
