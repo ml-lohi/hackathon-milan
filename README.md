@@ -26,7 +26,7 @@ We took 10% of this data for test and set validation split in the model to futhe
 
 #### CNN Architecture
 
-The code to CNN can be found [here](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/cnn_main.ipynb).
+The code to CNN can be found [here](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/CNN_main.ipynb).
 
 The amount of data doesn't give us a lot of freedom that's why amount of paramenters is rather smaller than it is **usually the case**.
 
@@ -50,5 +50,5 @@ You need all the libraries, provided in the [requirements.txt](https://github.co
 
 There are 2 apps that you can start directly by plugging in the radar:
 
-- [plot_cnn]
-- [plot_lstm]
+- [plot_cnn](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/plot_live_cnn.py)
+- [plot_lstm](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/plot_live_lstm.py)
