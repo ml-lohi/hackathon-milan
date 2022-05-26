@@ -5,9 +5,9 @@ from scipy.fftpack import fft
 import cv2
 
 
-def read_data(file):
+def read_data(file, n_frames:int = 5):
     data = np.loadtxt(file, dtype=np.complex128)
-    return data.reshape(data.shape[0], 5, 3, 64, 64)
+    return data.reshape(-1, n_frames, 3, 64, 64)
 
 def blur(data):
     """
