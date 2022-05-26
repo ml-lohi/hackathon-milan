@@ -5,13 +5,13 @@ import tkinter as tk
 import numpy as np
 import time
 from utils.app_interface import AppInterface
-from utils.helper import read_data, to_real, morphology
+from utils.helper import read_data, morphology
 from utils import processing
 import cv2
 from tensorflow import keras
 
 FOLDER = "hackathon-milan\\submission\\code\\data\\"
-PATH_MAC_MODEL = "submission/code/models/CNN_morphology"
+PATH_MAC_MODEL = "submission/code/models/LSTM"
 PATH_MAC_DATA = "submission/code/data/"
 
 
@@ -20,7 +20,7 @@ class MatplotlibApp(AppInterface):
         self.model = keras.models.load_model(
             PATH_MAC_MODEL
         )
-        self.data = read_data(PATH_MAC_DATA + "1p.csv")
+        self.data = read_data(PATH_MAC_DATA + "2p.csv")
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -72,10 +72,12 @@ class MatplotlibApp(AppInterface):
 
     def _process(self, canvas, axs):
         for sample in self.data:
-            sample = to_real(np.sum(np.expand_dims(sample, axis=0), axis=1))
-            sample[:,:,32,:] = 0
-            sample = morphology(sample)
-            sample = np.moveaxis(sample, 1, 3)
+            sample = np.abs(np.expand_dims(sample, axis=0))
+            # sample[:,:,32,:] = 0
+            sample[:,:,:,32,:] = 0
+            # sample = morphology(sample)
+            # sample = np.moveaxis(sample, 1, 3)
+            sample = np.moveaxis(sample, 2, 4)
             prediction_array = self.model.predict(sample)
             self._plot(canvas, axs, sample)
             self.people_count = np.argmax(prediction_array)
@@ -84,7 +86,8 @@ class MatplotlibApp(AppInterface):
 
     def _plot(self, canvas, axs, sample):
         for i, ax in enumerate(axs):
-            to_plot = sample[0,:,:,i]
+            ax.cla()
+            to_plot = sample[0,0,:,:,i]
             ax.imshow(to_plot)
         canvas.draw()
 
