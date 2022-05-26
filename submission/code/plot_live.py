@@ -37,7 +37,7 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(1, 3, figsize=(10, 5), sharex=True, sharey=True)
+        fig, axs = plt.subplots(1, 1, figsize=(10, 5), sharex=True, sharey=True)
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -84,7 +84,7 @@ class MatplotlibApp(AppInterface):
                         np.squeeze(frame["radar"].data / (4095.0))
                     )  # Dividing by 4095.0 to scale the data
                 if i_frame % (self.number_of_frames) == 0 and i_frame != 0:
-                    data = np.asarray(self.raw_data)
+                    data = np.array(self.raw_data)
                     range_doppler_map = processing.processing_rangeDopplerData(data)
                     sample = to_real(
                         np.sum(np.expand_dims(range_doppler_map, axis=0), axis=1)
@@ -102,9 +102,10 @@ class MatplotlibApp(AppInterface):
 
     def _plot(self, canvas, axs, sample):
 
-        for i, ax in enumerate(axs):
-            to_plot = sample[0, :, :, i]
-            ax.imshow(to_plot)
+        # for i, ax in enumerate(axs):
+        to_plot = sample[0, :, :, 1]
+        axs.cla()
+        axs.imshow(to_plot)
 
         canvas.draw()
         print(f"Plotted")
