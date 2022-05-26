@@ -5,14 +5,14 @@ import tkinter as tk
 import numpy as np
 import time
 from utils.app_interface import AppInterface
-from utils.helper import read_data, to_real
+from utils.helper import read_data, to_real, morphology
 from utils import processing
 import cv2
 from tensorflow import keras
 
-FOLDER = "hackathon-milan\\submission\\code\\data\\"
+FOLDER = "hackathon-milan\\submission\\code\\data\\data_big_2\\"
 PATH_MAC_MODEL = "submission/code/models/CNN"
-PATH_MAC_DATA = "submission/code/data/"
+PATH_MAC_DATA = "submission/code/data/data_big_2/"
 
 def normalize_data(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
@@ -41,10 +41,10 @@ def calculate_saliency_map(frames):
 
 class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
-        self.model = keras.models.load_model(
-            PATH_MAC_MODEL
-        )
-        self.data = read_data(PATH_MAC_DATA + "3p.csv")
+        # self.model = keras.models.load_model(
+        #     PATH_MAC_MODEL
+        # )
+        self.data = read_data(PATH_MAC_DATA + "2p.csv")
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -61,7 +61,7 @@ class MatplotlibApp(AppInterface):
         self.root.update()
 
     def run(self):
-        fig, axs = plt.subplots(1, 3, figsize=(3, 3), sharex=True, sharey=True)
+        fig, axs = plt.subplots(1, 1, figsize=(3, 3), sharex=True, sharey=True)
         fig.suptitle("Range-Doppler Plot")
         fig.tight_layout()
         canvas = FigureCanvasTkAgg(fig, master=self.plotFrame)
@@ -96,12 +96,17 @@ class MatplotlibApp(AppInterface):
 
     def _process(self, canvas, axs):
         for sample in self.data:
+            # Take mean from 5 samples and summ data from 3 sensors + erase Line
             sample = to_real(np.sum(np.expand_dims(sample, axis=0), axis=1))
-            sample[:,:,32,:] = 0
-            sample = np.moveaxis(sample, 1, 3)
-            prediction_array = self.model.predict(sample)
+
+            # sample[:,:,32,:] = 0
+            # sample = morphology(np.abs(np.expand_dims(np.mean(sample, axis=0), axis=0)))
+            # sample = np.expand_dims(np.sum(sample > 1, axis=1), axis=1)
+
+            sample = np.moveaxis(sample, 1, 3)      # [frame, img(64,64), sensor]
+            # prediction_array = self.model.predict(sample)
             self._plot(canvas, axs, sample)
-            self.people_count = np.argmax(prediction_array)
+            # self.people_count = np.argmax(prediction_array)
             self._reset_var()
             time.sleep(0.25)
 

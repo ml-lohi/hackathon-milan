@@ -27,7 +27,8 @@ def morphology(data):
     kernel = np.ones((5,5),np.uint8)
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
-            data_blurred[i,j] =  cv2.morphologyEx(data_blurred[i,j,:,:], cv2.MORPH_CLOSE, kernel)
+            # data_blurred[i,j] =  cv2.morphologyEx(data_blurred[i,j,:,:], cv2.MORPH_CLOSE, kernel)
+            data_blurred[i,j] =  cv2.dilate(data_blurred[i,j,:,:], kernel, iterations = 1)
     return data_blurred
 
 def to_real(data):
