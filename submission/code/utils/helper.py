@@ -30,16 +30,6 @@ def morphology(data):
             data_blurred[i,j] =  cv2.morphologyEx(data_blurred[i,j,:,:], cv2.MORPH_OPEN, kernel)
     return data_blurred
 
-def to_real(data):
-    """
-    data shape (n_times, n_radars, (image))
-    """
-    data_real = np.asarray(data)
-    for i in range(data.shape[0]):
-        for j in range(data.shape[1]):
-            data_real[i,j] = np.abs(data)[i,j,:,:]
-    return data_real.astype(float)
-
 def gauss(x, sigma):
     return np.exp(-(x**2) / (2 * sigma**2)) / (np.sqrt(2 * np.pi) * sigma)
 
