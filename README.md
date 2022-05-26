@@ -26,7 +26,7 @@ We took 10% of this data for test and set validation split in the model to futhe
 
 #### CNN Architecture
 
-The code to CNN can be found [here]().
+The code to CNN can be found [here](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/cnn_main.ipynb).
 
 The amount of data doesn't give us a lot of freedom that's why amount of paramenters is rather smaller than it is **usually the case**.
 
@@ -40,10 +40,15 @@ Data construction is very similar but in this case we take 20 frames instead of 
 
 #### LSTM Architecture
 
+The code to CNN&LSTM can be found [here](https://github.com/ml-lohi/hackathon-milan/blob/master/submission/code/cnn_lstm.ipynb).
+
 We constructed the CNN architecture and fed the data in it, without summing over the frames, because we need time coordinate. CNN layers are fed into the extra TimeDistributed layers which take care of the time domain. Afterwards we flatten the data and feed it into the LSTM wit 10 units, finishing with dropout and dense layer to the 4 classes.
 
 # The app
 
 You need all the libraries, provided in the [requirements.txt](https://github.com/ml-lohi/hackathon-milan/blob/master/requirements.txt).
 
-There are 2 apps that you can start directly by plugging in the radar. 
+There are 2 apps that you can start directly by plugging in the radar:
+
+- [plot_cnn]
+- [plot_lstm]
