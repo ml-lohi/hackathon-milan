@@ -25,8 +25,8 @@ submission/code/data/
 submission/code/data_old/
 submission/code/history/
 CNN/
-submission/code/models/
-submission/code/middle_line_analysis.ipynb
-submission/code/model_architecture_plot.ipynb
-submission/code/models_kosta/
+submission/code/models/CNN
+submission/code/models/CNN_Sobol
+submission/code/models_kosta/CNN
+submission/code/models_kosta/CNN2
 submission/code/middle_line_analysis.ipynb

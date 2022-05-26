@@ -25,7 +25,7 @@ class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
         self.root = root
         self.model = keras.models.load_model(
-            "hackathon-milan/submission/code/models_kosta/CNN"
+            "hackathon-milan/submission/code/models/CNN_new"
         )
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -100,13 +100,13 @@ class MatplotlibApp(AppInterface):
                         sample = np.abs(range_doppler_map)
                         sample[:, :, 32, :] = 0
                         sample = np.sum(sample, axis=0).squeeze()
-                        # normalized_sample = normalize_data_channels(sample)
-                        normalized_sample = sample
+                        normalized_sample = normalize_data_channels(sample)
+                        # normalized_sample = sample
                         normalized_sample = np.moveaxis(normalized_sample, 0, 2)
                         prediction_array = self.model.predict(
                             np.expand_dims(normalized_sample, axis=0), verbose=0
                         )
-                        print(prediction_array)
+                        # print(prediction_array)
                         label = np.argmax(prediction_array)
                         self.br = label
                         self._reset_hr_br()
