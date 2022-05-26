@@ -11,7 +11,7 @@ import cv2
 from tensorflow import keras
 
 FOLDER = "hackathon-milan\\submission\\code\\data\\"
-PATH_MAC_MODEL = "submission/code/models/LSTM"
+PATH_MAC_MODEL = "submission/code/models/LSTM_final"
 PATH_MAC_DATA = "submission/code/data/"
 
 
@@ -20,7 +20,7 @@ class MatplotlibApp(AppInterface):
         self.model = keras.models.load_model(
             PATH_MAC_MODEL
         )
-        self.data = read_data(PATH_MAC_DATA + "2p.csv")
+        self.data = read_data(PATH_MAC_DATA + "2p.csv", n_frames = 20)
         self.root = root
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
