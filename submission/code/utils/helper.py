@@ -41,4 +41,4 @@ def filter_gaussdxdx(image, kernel_factor, sigma):
     line = np.linspace(-kernel_factor * sigma, kernel_factor * sigma, faktor)
     filter = gaussdxdx(line, sigma=sigma)
     data_contrasted = ndimage.convolve(image, filter, mode="wrap")
-    return data_contrasted
+    return data_contrasted, filter
