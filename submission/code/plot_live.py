@@ -8,7 +8,7 @@ import time
 from utils.app_interface import AppInterface
 from ifxdaq.sensor.radar_ifx import RadarIfxAvian
 from utils import processing
-from utils.helper import read_data, to_real
+from utils.helper import read_data
 from tensorflow import keras
 
 
@@ -16,7 +16,7 @@ class MatplotlibApp(AppInterface):
     def __init__(self, root=None):
         self.root = root
         self.model = keras.models.load_model(
-            "hackathon-milan\submission\code\models_kosta\CNN"
+            "hackathon-milan\submission\code\models_kosta\LSTM"
         )
         self.plotFrame = tk.Frame(self.root, bg="black")
         self.plotFrame.pack(side="top", fill="both", expand=True)
@@ -86,14 +86,12 @@ class MatplotlibApp(AppInterface):
                 if i_frame % (self.number_of_frames) == 0 and i_frame != 0:
                     data = np.array(self.raw_data)
                     range_doppler_map = processing.processing_rangeDopplerData(data)
-                    sample = to_real(
-                        np.sum(np.expand_dims(range_doppler_map, axis=0), axis=1)
-                    )
-                    sample[:, :, 32, :] = 0
+                    sample = np.abs(np.expand_dims(range_doppler_map, axis=0))
+                    sample[:, :, :, 32, :] = 0
                     print(i_frame)
-                    sample = np.moveaxis(sample, 1, 3)
+                    sample = np.moveaxis(sample, 2, 4)
                     prediction_array = self.model.predict(sample, verbose=0)
-                    self._plot(canvas, axs, sample)
+                    # self._plot(canvas, axs, sample)
                     label = np.argmax(prediction_array)
                     self.br = label
                     self._reset_hr_br()
